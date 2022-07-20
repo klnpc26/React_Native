@@ -16,15 +16,21 @@ import { View, StyleSheet, SafeAreaView } from 'react-native'
 // import Membro from './componentes/relacao/Membro'
 // import UsuarioLogado from './componentes/UsuarioLogado'
 // import ListaProdutos from './componentes/produtos/ListaProdutos'
-//import ListaProdutosV2 from './componentes/produtos/ListaProdutosV2'
+// import ListaProdutosV2 from './componentes/produtos/ListaProdutosV2'
 // import DigiteSeuNome from './componentes/DigiteSeuNome'
-import FlexboxV2 from './componentes/layout/FlexboxV2'
-
+// import FlexboxV1 from './componentes/layout/FlexboxV1'
+// import FlexboxV2 from './componentes/layout/FlexboxV2'
+// import FlexboxV3 from './componentes/layout/FlexboxV3'
+// import FlexboxV4 from './componentes/layout/FlexboxV4'
+import Mega from './componentes/mega/Mega'
 
 export default () => (
     <SafeAreaView style={style.App}>
-        <FlexboxV2 />
+        <Mega qtdNumbers={12}/>
         {/* 
+        <FlexboxV4 />
+        <FlexboxV3 />
+        <FlexboxV2 />
         <FlexboxV1 />
         <DigiteSeuNome />
         <ListaProdutosV2 />

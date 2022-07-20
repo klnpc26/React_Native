@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import estilo from '../estilo'
 
 export default props => {
-    const lado = 50;
+    const lado = props.lado || 50;
     return (
         <View style={{
             height: lado,
