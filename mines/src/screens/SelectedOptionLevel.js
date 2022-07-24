@@ -19,8 +19,8 @@ export default function (props) {
     return (
         <TouchableOpacity style={styleOption} onPress={props.onSelection}>
             {label == 'easy' ? <Text style={styles.buttonLabel}>Fácil</Text> : false}
-            {label == 'normal' ? <Text style={styles.buttonLabel}>Normal</Text> : false}
-            {label == 'hard' ? <Text style={styles.buttonLabel}>Intermediário</Text> : false}
+            {label == 'normal' ? <Text style={styles.buttonLabel}>Intermediário</Text> : false}
+            {label == 'hard' ? <Text style={styles.buttonLabel}>Difícil</Text> : false}
         </TouchableOpacity>
     )
 }
