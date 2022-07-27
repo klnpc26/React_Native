@@ -21,6 +21,22 @@ const actions = {
                 ...state,
                 users: state.users.filter(x => x.id != user.id)  
             }
+    },
+    createUser(state, action) {
+        const user = action.payload;
+        user.id = Math.random();
+
+        return {
+            ...state,
+            users: [...state.users, user],
+        }
+    },
+    updateUser(state, action) {
+        const update = action.payload;
+        return {
+            ...state,
+            users: state.users.map(x => x.id == update.id ? update : x)
+        }
     }
 }
 

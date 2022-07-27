@@ -14,17 +14,17 @@ export default function (props) {
             <NavigationContainer>
                 <Stack.Navigator
                     initialRouteName='UserList'
-                    screenOptions={screnOptions}
-                >
+                    screenOptions={screnOptions}>
                     <Stack.Screen
                         name="UserList"
                         component={UserList}
-                        options={() => {
+                        options={({ navigation }) => {
                             return {
                                 title: "Lista de Usuários",
                                 headerRight: () => {
                                     return (
                                         <Button
+                                            onPress={() => navigation.navigate("UserForm")}
                                             type="clear"
                                             icon={<Icon name='add' size={25} color="white"></Icon>}
                                         />
