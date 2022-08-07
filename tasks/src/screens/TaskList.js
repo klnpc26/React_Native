@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
 import { Text, View, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform, Alert } from 'react-native'
-
 import AsyncStorege from '@react-native-community/async-storage'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import Tasks from '../components/Tasks'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import Axios from 'axios'
+
 import commonStyles from '../commonStyles'
 import AddTask from '../screens/AddTask';
 import todayImage from '../../assets/imgs/today.jpg'
+import { server, showError } from '../common'
 
 const initialState = {
     tasks: [],
@@ -26,8 +28,12 @@ export default class TaskList extends Component {
     //Restura visualmente a lista filtrada quando o componente é exibido
     componentDidMount = async () => {
         const stateString = await AsyncStorege.getItem('tasksState');
-        const state = JSON.parse(stateString) || initialState;
-        this.setState(state, this.filterTasks)
+        const savedState = JSON.parse(stateString) || initialState;
+        this.setState({
+            showDoneTasks: savedState.showDoneTasks
+        }, this.filterTasks)
+
+        this.loadTasks();
     }
 
     toggleFilter = () => {
@@ -47,41 +53,61 @@ export default class TaskList extends Component {
 
         this.setState({ visibleTasks });
 
-        AsyncStorege.setItem('tasksState', JSON.stringify(this.state))
+        AsyncStorege.setItem('tasksState', JSON.stringify({
+            showDoneTasks: this.state.showDoneTasks
+        }))
     }
 
-    toggleTask = taskId => {
-        const tasks = [...this.state.tasks];
-        tasks.forEach(task => {
-            if (task.id === taskId) {
-                task.doneAt = task.doneAt ? null : new Date()
-            }
-        });
-
-        this.setState({ tasks }, this.filterTasks);
+    toggleTask = async taskId => {
+        try {
+            await Axios.put(`${server}/tasks/${taskId}/toggle`)
+            this.loadTasks();
+        }
+        catch(err) {
+            showError(err)
+        }
     }
 
-    addTask = newTask => {
+    addTask = async newTask => {
         if (!newTask.desc || !newTask.desc.trim()) {
             Alert.alert('Dados inválidos', 'Descrição não informada!')
             return
         }
+        
+        try {
+            await Axios.post(`${server}/tasks`, {
+                desc: newTask.desc,
+                estimateAt: newTask.date
+            })
 
-        const tasks = [...this.state.tasks]
-        tasks.push({
-            id: Math.random(),
-            desc: newTask.desc,
-            estimateAt: newTask.date,
-            doneAt: null
-        })
-
-        this.setState({ tasks, showAddTask: false }, this.filterTasks)
+            this.setState({ showAddTask: false }, this.loadTasks)
+        }
+        catch(err) {
+            showError(err)
+        }
     }
 
-    deleteTask = id => {
-        const tasks = this.state.tasks.filter(task => task.id !== id)
+    deleteTask = async taskId => {
+        try {
+            await Axios.delete(`${server}/tasks/${taskId}`)
+            this.loadTasks();
 
-        this.setState({ tasks }, this.filterTasks)
+            this.setState({ showAddTask: false }, this.loadTasks)
+        }
+        catch(err) {
+            showError(err)
+        }
+    }
+
+    loadTasks = async () => {
+        try {
+            const maxDate = moment().endOf('day').format('YYYY-MM-DD 23:59:59');
+            const res = await Axios.get(`${server}/tasks?date=${maxDate}`)
+            this.setState({tasks: res.data}, this.filterTasks)
+        }
+        catch(err) {
+            showError(err)
+        }
     }
 
     render() {
@@ -96,7 +122,6 @@ export default class TaskList extends Component {
                         <TouchableOpacity onPress={this.toggleFilter}>
                             <Icon name={this.state.showDoneTasks ? "eye" : "eye-slash"}
                                 size={20} color={commonStyles.color.secundary}>
-
                             </Icon>
                         </TouchableOpacity>
                     </View>
